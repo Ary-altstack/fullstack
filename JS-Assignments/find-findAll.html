@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <script>
+        function findMe(){
+            var output;
+            var text = document.getElementsByTagName("p")[0].textContent ;
+            var userInput = document.getElementsByTagName("input")[0].value;
+            console.log(text + " Aave che ");
+            console.log (" Found " + userInput);
+            console.log(text.includes(userInput));
+
+            if(text.includes(userInput)){
+                output = text.replace(userInput," <mark> "+ userInput + "</mark>");
+                document.getElementsByTagName("p")[0].innerHTML = output; 
+            }
+
+        }   
+    //     <!-- var find = document.getElementsByTagName("p")[0];
+    //     document.write("hii "+ find);
+    //     var word = 
+    //     console.log(`${word}${find.includes(word) ? " is " : " is not "
+    // } in the sentence`,); -->
+
+// if (searchWord === "") {
+//     word.textContent = "Search a wordd";
+//     return;
+// }
+
+// const isFound = find.toLowerCase().includes(findWord.toLowerCase());
+// resultDiv.textContent = `The word "${searchTerm}" ${isFound ? "word founded" : "not found"}`;
+
+// }
+
+// console.log(`Does "${find}" include "${anotherWords}"? ${find.includes(anotherWord)}`);
+</script>
+<style>
+    mark{
+        display: inline-block;
+        background-color: rgb(235, 81, 4);
+    }
+</style>
+
+</head>
+<body>
+    <div id="container">
+        <p>Beatles is the grestest band of all time</p>
+        <label for="searchInput">Enter a word to search</label>
+        <input type="text" id="text">
+        <button onclick="findMe()">Find the word </button>
+        <p></p>
+    </div>
+
+    <div id="word"></div>
+    
+</body>
+</html>

@@ -1,0 +1,22 @@
+
+Assignment 1  Individual task
+Vehicle Maintenance Tracker
+Basic Features:
+    add Task
+       add vehicle name, model, task detail, due date
+       Button to store these info on localStorage
+    View All Tasks
+       Display the list of tasks with:
+       Vehicle Name, Task Description, Date, Status (Pending/Completed)
+       Buttons (Mark as Complete, Edit, Delete)
+    Edit Task
+       Allow editing an existing task (with dropdown to select the options).
+       Mark Task as Completed
+       Clicking a button should change the task’s status and apply a visual style (like strikethrough).
+    Delete Task
+    Remove a task from the list and localStorage.
+    Filter Options
+       View all, only Pending, or only Completed tasks using radio buttons or a dropdown.
+    LocalStorage Integration
+       All data should be saved locally.
+       On page reload, the task list should be restored.

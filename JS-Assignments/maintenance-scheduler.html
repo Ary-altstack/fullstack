@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add/Edit Vehicle Maintenance Task</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        width: 500px;
+        text-align: center;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .fields {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: bold;
+      }
+
+      input[type="text"],
+      textarea,
+      select,
+      input[type="date"] {
+        width: calc(100% - 12px);
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+
+      .viewTask {
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      .viewTask a {
+        text-decoration: none;
+        color: green;
+        font-weight: bold;
+      }
+    </style>
+    <script>
+    
+      document.addEventListener("DOMContentLoaded", () => {
+        var addTask = document.querySelector(".addDetails");
+        var taskNameSelect = document.getElementById("taskName");
+        var vehicleNameInput = document.querySelector(".vehicleName");
+        var taskDescriptionInput = document.getElementById("taskDescription");
+        var dueDateInput = document.querySelector(".date");
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var taskIdToEdit = urlParams.get("id");
+
+
+        if (taskIdToEdit) {
+          loadTaskForEdit(taskIdToEdit);
+          document.querySelector("h1").textContent =
+            "Edit Vehicle Maintenance Task";
+          document.querySelector(".Addbutton button").textContent =
+            "Save Changes";
+        }
+
+        if (addTask) {
+          addTask.addEventListener("submit", function (event) {
+            event.preventDefault();
+            saveTask(taskIdToEdit);
+          });
+        }
+
+        function loadTaskForEdit(id) {
+          var tasks = JSON.parse(localStorage.getItem("vehicleTasks")) || [];
+          var taskToEdit = tasks.find((task) => task.id === parseInt(id));
+
+          if (taskToEdit) {
+            taskNameSelect.value = taskToEdit.taskName;
+            vehicleNameInput.value = taskToEdit.vehicleName;
+            taskDescriptionInput.value = taskToEdit.description;
+            dueDateInput.value = taskToEdit.dueDate;
+          }
+        }
+
+        function saveTask(editingId) {
+          if (
+            taskNameSelect &&
+            vehicleNameInput &&
+            taskDescriptionInput &&
+            dueDateInput
+          ) {
+            var taskName = taskNameSelect.value;
+            var vehicleName = vehicleNameInput.value.trim();
+            var description = taskDescriptionInput.value.trim();
+            var dueDate = dueDateInput.value;
+
+            if (vehicleName && description && dueDate && taskName) {
+              var taskData = {
+                id: editingId ? parseInt(editingId) : Date.now(),
+                taskName: taskName,
+                vehicleName: vehicleName,
+                description: description,
+                dueDate: dueDate,
+                status: editingId ? getExistingStatus(editingId) : "Pending",
+              };
+
+              let tasks =
+                JSON.parse(localStorage.getItem("vehicleTasks")) || [];
+
+              if (editingId) {
+                tasks = tasks.map((task) =>
+                  task.id === parseInt(editingId) ? taskData : task
+                );
+              } else {
+                tasks.push(taskData);
+              }
+
+              localStorage.setItem("vehicleTasks", JSON.stringify(tasks));
+              window.location.href = "./tasklist.html";
+            }
+          }
+        }
+        function getExistingStatus(id) {
+          var tasks = JSON.parse(localStorage.getItem("vehicleTasks")) || [];
+          var existingTask = tasks.find((task) => task.id === parseInt(id));
+          return existingTask ? existingTask.status : "Pending";
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Add Vehicle Maintenance Task</h1>
+      <form class="addDetails">
+        <div class="fields">
+          <label for="Task">Task Name</label>
+          <select id="taskName" class="task" name="taskName">
+            <option value="">Select a Task</option>
+            <option value="Change Break-Oil">Break oil changing</option>
+            <option value="Engine Oil">Engine Oil changing</option>
+            <option value="Cleaning">Car Polishing & Cleaning</option>
+            <option value="Air Conditioner">AC checking</option>
+          </select>
+        </div>
+        <div class="fields">
+          <label for="Vehicle-Name">Vehicle Name</label>
+          <input
+            type="text"
+            class="vehicleName"
+            id="vehicleName"
+            name="vehicleName"
+            placeholder="Enter vehicle name"
+          />
+        </div>
+        <div class="fields">
+          <label for="Task-Description">Description</label>
+          <textarea
+            id="taskDescription"
+            class="taskDescription"
+            name="taskDescription"
+            placeholder="Add in brief"
+          ></textarea>
+        </div>
+        <div class="fields">
+          <label for="Date">Due Date</label>
+          <input
+            type="date"
+            class="date"
+            id="date"
+            name="Date"
+            placeholder="Enter date"
+          />
+        </div>
+        <div class="Addbutton">
+          <button type="submit">Submit your task</button>
+        </div>
+        <div class="viewTask">
+          <a href="./tasklist.html">View all tasks</a>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

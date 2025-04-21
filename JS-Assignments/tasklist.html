@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>List of Tasks</title>
+    <script>
+      //document.addEventListener("DOMContentLoaded", saveTasks);
+      //     var taskName = document.getElementsByClassName("addTaskName")[0].value;
+      //     var vehicleName =
+      //      document.getElementsByClassName("addVehicleName")[0].value;
+      //     var description =
+      //      document.getElementsByClassName("addDescription")[0].value;
+      //     var dueDate = document.getElementsByClassName("addDueDate")[0].value;
+      //     console.log(vehicleName);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        var tasksList = document.getElementById("tasks-list");
+        var filterOptions = document.querySelectorAll('input[name="filter"]');
+        var allTasks = JSON.parse(localStorage.getItem("vehicleTasks")) || [];
+        var currentFilter = "all";
+
+        //     var taskList = document.getElementsByClassName("taskList")[0];
+        //     var filterOptions = document.querySelectorAll('input[name="filter"]');
+        //     var editTaskName = document.getElementsByClassName('editTaskName')[0];
+        //     var editTaskForm = document.getElementsByClassName('editTaskform')[0];
+        //     var editTask = document.getElementsByClassName('editTaskName')[0];
+
+        // function updateTaskStatus( taskName,vehicleName,newStatus) {
+        //   var tasks = JSON.parse(localStorage.getItem(vehicleName));
+        //   if (tasks && tasks[taskName]) {
+        //     tasks[taskName].status = newStatus;
+        //     localStorage.setItem(vehicleName, JSON.stringify(tasks));
+        //     loadTasks();
+        //   }
+        // }
+
+        saveTasks(filterTasks(currentFilter));
+
+        filterOptions.forEach((radio) => {
+          radio.addEventListener("change", (event) => {
+            currentFilter = event.target.value;
+            saveTasks(filterTasks(currentFilter));
+          });
+        });
+
+        function filterTasks(filter) {
+          if (filter == "pending") {
+            return allTasks.filter((task) => task.status == "Pending");
+          } else if (filter == "completed") {
+            return allTasks.filter((task) => task.status == "Completed");
+          } else {
+            return allTasks;
+          }
+        }
+
+        function saveTasks(tasks) {
+          tasksList.innerHTML = "";
+          if (tasks.length == 0) {
+            tasksList.innerHTML =
+              '<tr><td colspan="6" class="no-tasks">No tasks available.</td></tr>';
+            return;
+          }
+
+          var table = document.createElement("table");
+          var thead = document.createElement("thead");
+          thead.innerHTML = `
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>Task</th>
+                        <th>Description</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                `;
+
+          // function deleteTask( taskName,vehicleName) {
+          //   let tasks = JSON.parse(localStorage.getItem(vehicleName));
+          //   if (tasks) {
+          //     tasks = tasks.filter(task => task.task !== taskName);
+          //     if (tasks.length > 0) {
+          //       localStorage.setItem(vehicleName, JSON.stringify(tasks));
+          //     } else {
+          //       localStorage.removeItem(vehicleName);
+          //     }
+          //     saveTasks();
+          //   }
+          // }
+
+          table.appendChild(thead);
+
+          var tbody = document.createElement("tbody");
+          tasks.forEach((task) => {
+            var row = document.createElement("tr");
+            row.innerHTML = `
+                        <td><span class="${
+                          task.status == "Completed" ? "completed" : ""
+                        }">${task.vehicleName}</span></td>
+                        <td><span class="${
+                          task.status == "Completed" ? "completed" : ""
+                        }">${task.taskName}</span></td>
+                        <td><span class="${
+                          task.status == "Completed" ? "completed" : ""
+                        }">${task.description}</span></td>
+                        <td><span class="${
+                          task.status == "Completed" ? "completed" : ""
+                        }">${task.dueDate}</span></td>
+                        <td><span class="${
+                          task.status == "Completed" ? "completed" : ""
+                        }">${task.status}</span></td>
+                        <td class="task-actions">
+                            ${
+                              task.status == "Pending"
+                                ? `<button class="complete-btn" data-id="${task.id}">Mark Complete</button>`
+                                : ""
+                            }
+                            <a href="./maintenance-scheduler.html?id=${
+                              task.id
+                            }"><button class="edit-btn" data-id="${
+              task.id
+            }">Edit</button></a>
+                            <button class="delete-btn" data-id="${
+                              task.id
+                            }">Delete</button>
+                        </td>
+                    `;
+            tbody.appendChild(row);
+          });
+          table.appendChild(tbody);
+          tasksList.appendChild(table);
+          attachEventListeners();
+        }
+
+        function attachEventListeners() {
+          var completeButtons = document.querySelectorAll(".complete-btn");
+          completeButtons.forEach((button) => {
+            button.addEventListener("click", markTaskComplete);
+          });
+
+          var deleteButtons = document.querySelectorAll(".delete-btn");
+          deleteButtons.forEach((button) => {
+            button.addEventListener("click", deleteTask);
+          });
+        }
+
+        function markTaskComplete(event) {
+          var taskId = parseInt(event.target.dataset.id);
+          allTasks = allTasks.map((task) =>
+            task.id == taskId ? { ...task, status: "Completed" } : task
+          );
+          localStorage.setItem("vehicleTasks", JSON.stringify(allTasks));
+          saveTasks(filterTasks(currentFilter));
+        }
+
+        function deleteTask(event) {
+          var taskId = parseInt(event.target.dataset.id);
+          allTasks = allTasks.filter((task) => task.id !== taskId);
+          localStorage.setItem("vehicleTasks", JSON.stringify(allTasks));
+          saveTasks(filterTasks(currentFilter));
+        }
+      });
+    </script>
+    <style>
+      body {
+        display: flex;
+        font-family: sans-serif;
+        background-color: white;
+        padding: 20px;
+        justify-content: center;
+      }
+
+      .container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px black(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 900px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+      }
+
+      .filter-options {
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .filter-options label {
+        margin: 10px;
+        font-weight: bold;
+      }
+
+      table {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid white;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: white;
+        font-weight: bold;
+      }
+
+      .completed {
+        text-decoration: line-through;
+        color: grey;
+      }
+
+      .task-actions button {
+        background-color: #ffa602;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        /* margin-right: 5px; */
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .task-actions button.edit-btn {
+        color: black;
+        background-color: yellow;
+      }
+
+      .task-actions button.delete-btn {
+        background-color: red;
+      }
+
+      .no-tasks {
+        text-align: center;
+        color: gray;
+      }
+
+      .add-new-task {
+        /* justify-content: center; */
+        /* align-items: center; */
+        text-align: center;
+        /* margin: 10px; */
+        margin-top: 15px;
+      }
+
+      .add-new-task a {
+        text-decoration: none;
+        color: green;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Vehicle Maintenance Tasks</h1>
+
+      <div class="filter-options">
+        <label>View:</label>
+        <input type="radio" name="filter" value="all" id="filter-all" checked />
+        <label for="filter-all">All</label>
+        <input type="radio" name="filter" value="pending" id="filter-pending" />
+        <label for="filter-pending">Pending</label>
+        <input
+          type="radio"
+          name="filter"
+          value="completed"
+          id="filter-completed"
+        />
+        <label for="filter-completed">Completed</label>
+      </div>
+
+      <div id="tasks-list"></div>
+
+      <div class="add-new-task">
+        <a href="./maintenance-scheduler.html">Add New Task</a>
+      </div>
+    </div>
+  </body>
+</html>
